@@ -16,52 +16,44 @@
       Soundtrack:<br>
       Neo-Soul • Rock 'n' Roll • And a little Hip Hop is the goal
     </p>
-    <a href="countdown.html" class="button">Confirm</a>
+    <button id="confirmBtn" class="button">Confirm</button>
+
   </div>
 
-<script> 
-
+<script>
   const confirmBtn = document.getElementById("confirmBtn");
 
   confirmBtn.addEventListener("click", async () => {
-    // 1. Get selected radio input
-    const selectedInput = document.querySelector('input[name="fighter"]:checked');
+    const chosenDate = "Twist And Shout 🎶✨";
 
-    if (!selectedInput) {
-      alert("Please choose an option first 💕");
-      return;
-    }
-
-    // 2. Extract the visible text
-    const chosenDate = selectedInput.nextElementSibling.textContent.trim();
-
-    // 3. Save locally (used on next pages)
+    // Save locally (optional, but useful)
     localStorage.setItem("selectedDate", chosenDate);
 
-    // 4. Send email via Formspree
-    await sendDateByEmail(chosenDate);
+    try {
+      const response = await fetch("https://formspree.io/f/xojnvoky", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Accept": "application/json"
+        },
+        body: JSON.stringify({
+          selected_date: chosenDate,
+          page: "plan-TAS.html",
+          submitted_at: new Date().toISOString()
+        })
+      });
 
-    // 5. Navigate to next page
-    window.location.href = "save-the-date.html";
-  });
-
-  async function sendDateByEmail(selectedDate) {
-    const response = await fetch("https://formspree.io/f/xojnvoky", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify({
-        selected_date: selectedDate,
-        submitted_at: new Date().toISOString()
-      })
-    });
-
-    if (!response.ok) {
-      console.error("Email submission failed");
+      if (!response.ok) {
+        console.error("Formspree submission failed");
+      }
+    } catch (error) {
+      console.error("Error submitting form:", error);
     }
-  }
-  
+
+    // Navigate ONLY after submission attempt
+    window.location.href = "countdown.html";
+  });
 </script>
+
 </body>
 </html>
