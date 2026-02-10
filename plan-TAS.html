@@ -18,5 +18,50 @@
     </p>
     <a href="countdown.html" class="button">Confirm →</a>
   </div>
+
+<script> 
+
+  const confirmBtn = document.getElementById("confirmBtn");
+
+  confirmBtn.addEventListener("click", async () => {
+    // 1. Get selected radio input
+    const selectedInput = document.querySelector('input[name="fighter"]:checked');
+
+    if (!selectedInput) {
+      alert("Please choose first 💕");
+      return;
+    }
+
+    // 2. Extract the visible text
+    const chosenDate = selectedInput.nextElementSibling.textContent.trim();
+
+    // 3. Save locally (used on next pages)
+    localStorage.setItem("selectedDate", chosenDate);
+
+    // 4. Send email via Formspree
+    await sendDateByEmail(chosenDate);
+
+    // 5. Navigate to next page
+    window.location.href = "see-you-soon.html";
+  });
+
+  async function sendDateByEmail(selectedDate) {
+    const response = await fetch("https://formspree.io/f/mdadqwly", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        selected_date: selectedDate,
+        submitted_at: new Date().toISOString()
+      })
+    });
+
+    if (!response.ok) {
+      console.error("Email submission failed");
+    }
+  }
+  
+</script>
 </body>
 </html>
